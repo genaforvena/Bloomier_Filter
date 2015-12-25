@@ -52,6 +52,36 @@ class ImmutableBloomierFilter:
 
             self._table[index_of_storage] = value_to_store
 
-
     def get(self, key):
+        neighborhood = self._hasher.get_neighbothood(key)
+        mask = self._hasher.get_m(key)
+
+        result = []
+
+        self._byte_array_xor(result, mask)
+
+        neighborhood_set = {}
+        for hash_value in neighborhood:
+            neighborhood_set.add(hash_value)
+
+        for hash_value in neighborhood_set:
+            self._byte_array_xor(result, self._table[hash_value])
+
+        return self._decode(result)
+
+    def _byte_array_xor(self, result_array, xor_array):
+        length = min(len(result_array), len(xor_array))
+
+        for i in range(length):
+            result_array[i] = result_array[i] ^ xor_array[i]
+
+        # TODO check if we're returning correct value
+        return result_array
+
+    def _encode(self, value):
+        #TODO
+        pass
+
+    def _decode(self, value):
+        #TODO
         pass
