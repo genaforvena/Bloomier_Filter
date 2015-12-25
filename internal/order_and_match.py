@@ -1,9 +1,10 @@
 import sys
 
 from internal.hasher import BloomierHasher
+from internal.tweaker import SingletonFindingTweaker
 
 
-class OrderAndMatch:
+class OrderAndMatchFinder:
     def __init__(self, keys, m, k, q, hash_seed_hint = sys.maxsize + 1):
         self._keys = keys
         self._m = m
@@ -23,11 +24,6 @@ class OrderAndMatch:
         self._hasher = BloomierHasher(self._hash_seed, self._m, self._k, self._q)
 
         for i in range(sys.maxsize):
-            if has_timed_out:
-                raise Exception(
-                        format("Could not find order and matching for key set in alloted time with specified parameters (m=%d;k=%d;q=%d)",
-                                                             self._m, self._k, self._q))
-
             if self._find_match(self._keys):
                 self._order_and_match = OrderAndMatch(self._hash_seed, self._pi, self._tau)
                 return self._order_and_match
@@ -50,7 +46,7 @@ class OrderAndMatch:
 
         for key in remaining_keys:
             iota = tweaker.tweak(key)
-            if iota:
+            if iota >= 0:
                 pi_queue.add(key)
                 tau_queue.add(iota)
 
@@ -68,3 +64,9 @@ class OrderAndMatch:
 
         return True
 
+
+class OrderAndMatch:
+    def __init__(self, hash_seed, pi_list, tau_list):
+        self.hash_seed = hash_seed
+        self.pi_list = pi_list
+        self.tau_list = tau_list

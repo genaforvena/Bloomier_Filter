@@ -5,6 +5,10 @@ class BloomierHasher:
         self._k = k
         self._q = q
 
+    def get_neighborhood(self, key):
+        #TODO
+        pass
+
     def get_m(self, key):
         #TODO
         pass
