@@ -1,4 +1,7 @@
 import sys
+import threading
+
+import datetime
 
 from internal.hasher import BloomierHasher
 from internal.tweaker import SingletonFindingTweaker
@@ -13,17 +16,24 @@ class OrderAndMatchFinder:
         self._hash_seed = hash_seed_hint
         self._tau = []
         self._pi = []
-        self._order_and_match
-        self._hasher
+        self._order_and_match = None
+        self._hasher = None
+        self._has_timed_out = False
+
+    def _timer_job(self):
+        self._has_timed_out = True
 
     def find(self, timeout_ms):
-        has_timed_out = False
-
-        # TODO set timer to change has_timed_out value after timeout_ms
+        t = threading.Timer(datetime.datetime.now(), self._timer_job())
+        t.start()
 
         self._hasher = BloomierHasher(self._hash_seed, self._m, self._k, self._q)
 
         for i in range(sys.maxsize):
+            if self._has_timed_out:
+                print("Timed out before finding order and match!")
+                return self._order_and_match
+
             if self._find_match(self._keys):
                 self._order_and_match = OrderAndMatch(self._hash_seed, self._pi, self._tau)
                 return self._order_and_match
