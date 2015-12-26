@@ -59,7 +59,6 @@ class ImmutableBloomierFilter:
             mask = self._hasher.get_m(key)
 
             index_of_storage = neighborhood[tau[i]]
-            # TODO init value to store
             value_to_store = bytearray(self._table_entry_size)
 
             _byte_array_xor(value_to_store, encoded_value)
